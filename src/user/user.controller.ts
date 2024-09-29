@@ -15,7 +15,7 @@ export class UserController {
   }
 
   @Get('/:id')
-  async findOneUser(@Param('id') id: number): Promise<User> {
+  async findOneUser(@Param('id') id: string): Promise<User> {
     const user = await this.userService.findOne(id);
     return user;
   }
@@ -27,14 +27,14 @@ export class UserController {
 
   @Put('/:id')
   async updateUser(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateUserDto: Partial<CreateUserDto>,
   ) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete('/:id')
-  async deleteUser(@Param('id') id: number) {
+  async deleteUser(@Param('id') id: string) {
     return this.userService.deleteById(id);
   }
 }
