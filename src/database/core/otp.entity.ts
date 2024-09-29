@@ -2,13 +2,13 @@ import { BaseEntity } from './base.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-export class User extends BaseEntity {
+export class Otp extends BaseEntity {
   @Column()
-  email: string;
+  otp: String;
 
   @Column()
-  password: string;
+  expiresAt: Date;
 
-  @Column()
-  username: string;
+  @Column({ default: false })
+  isUsed: boolean;
 }

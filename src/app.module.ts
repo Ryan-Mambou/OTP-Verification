@@ -5,6 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { OtpModule } from './otp/otp.module';
+import { MailingService } from './mailing/mailing.service';
+import { MailingModule } from './mailing/mailing.module';
 
 @Module({
   imports: [
@@ -20,8 +24,21 @@ import { ConfigModule } from '@nestjs/config';
       entities: [__dirname + '/database/core/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: parseInt(process.env.MAIL_PORT, 465),
+        secure: false,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      },
+    }),
     AuthModule,
     UserModule,
+    OtpModule,
+    MailingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

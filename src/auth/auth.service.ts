@@ -4,12 +4,22 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
+import { OtpService } from 'src/otp/otp.service';
 import { CreateUserDto, SignInDto } from 'src/user/user.dto';
 import * as bcrypt from 'bcrypt';
+import {
+  generateExpiryDate,
+  generateOtp,
+} from 'src/common/utils/otp.generator';
+import { MailingService } from 'src/mailing/mailing.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private otpService: OtpService,
+    private mailingService: MailingService,
+  ) {}
 
   async signUp(createUserDto: CreateUserDto) {
     const { email, password, username } = createUserDto;
@@ -19,12 +29,24 @@ export class AuthService {
 
     if (!exitingUser) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
-      console.log(hashedPassword);
+
       const newUser = await this.userService.createUser({
         email: email,
         password: hashedPassword,
         username: username,
       });
+
+      const newOtp = generateOtp();
+      const otpExpiresAt = generateExpiryDate();
+
+      await this.otpService.createOtp({
+        otp: newOtp,
+        expiresAt: otpExpiresAt,
+      });
+
+      //Send Mail to user
+      await this.mailingService.sendMail(email, 'Verify your email', newOtp);
+
       return newUser;
     } else {
       throw new ConflictException('User with this email already exists');
