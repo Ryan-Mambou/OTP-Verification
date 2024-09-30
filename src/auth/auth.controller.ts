@@ -11,12 +11,11 @@ export class AuthController {
   @Serialize(CreateUserDto)
   @Post('/signup')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+    return await this.authService.signUp(createUserDto);
   }
 
-  @Serialize(GeneralUserDto)
   @Post('/login')
   async signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto);
+    return await this.authService.signIn(signInDto);
   }
 }

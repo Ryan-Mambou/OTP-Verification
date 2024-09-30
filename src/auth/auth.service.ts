@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { OtpService } from 'src/otp/otp.service';
+import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto, SignInDto } from 'src/user/user.dto';
 import * as bcrypt from 'bcrypt';
 import {
@@ -19,6 +20,7 @@ export class AuthService {
     private userService: UserService,
     private otpService: OtpService,
     private mailingService: MailingService,
+    private jwtService: JwtService,
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
@@ -46,13 +48,14 @@ export class AuthService {
 
       await this.mailingService.sendMail(email, 'Verify your email', newOtp);
 
+      console.log('newUSer --->', newUser);
       return newUser;
     } else {
       throw new ConflictException('User with this email already exists');
     }
   }
 
-  async signIn(signInDto: SignInDto) {
+  async signIn(signInDto: SignInDto): Promise<{ accessToken: string }> {
     const { email, password } = signInDto;
 
     const user = await this.userService.findByEmail(email);
@@ -67,6 +70,12 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect password');
     }
 
-    return user;
+    console.log(
+      'user --->',
+      this.jwtService.sign({ email: user.email, userId: user.id }),
+    );
+    return {
+      accessToken: this.jwtService.sign({ email: user.email, userId: user.id }),
+    };
   }
 }
