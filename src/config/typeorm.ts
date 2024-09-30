@@ -1,12 +1,9 @@
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
-import { join } from 'path';
 config();
 
 const configService = new ConfigService();
-
-console.log('Pathname: ', __dirname);
 
 const AppDataSource = new DataSource({
   type: 'postgres',

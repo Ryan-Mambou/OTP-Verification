@@ -44,7 +44,6 @@ export class AuthService {
         expiresAt: otpExpiresAt,
       });
 
-      //Send Mail to user
       await this.mailingService.sendMail(email, 'Verify your email', newOtp);
 
       return newUser;

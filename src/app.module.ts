@@ -7,12 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { OtpModule } from './otp/otp.module';
-import { MailingService } from './mailing/mailing.service';
 import { MailingModule } from './mailing/mailing.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -27,7 +26,7 @@ import { MailingModule } from './mailing/mailing.module';
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
-        port: parseInt(process.env.MAIL_PORT, 465),
+        port: parseInt(process.env.MAIL_PORT, 587),
         secure: false,
         auth: {
           user: process.env.MAIL_USER,
