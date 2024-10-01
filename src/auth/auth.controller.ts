@@ -5,6 +5,8 @@ import { Serialize } from 'src/common/serializers/serializer.interceptor';
 import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenficationGuard } from 'src/common/guards/authentication.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/types/role.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -34,4 +36,10 @@ export class AuthController {
   // async signIn(@Request() req) {
   //   return await this.authService.signIn(req.user);
   // }
+
+  //This check is a user has a specific role
+  // @Post('/any route that requires authorization')
+  // @Roles(Role.USER)
+  // @UseGuards([AuthenficationGuard, AuthorizationGuard])
+  // async methodName (){}
 }
