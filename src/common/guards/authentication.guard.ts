@@ -21,7 +21,6 @@ export class AuthenficationGuard implements CanActivate {
       if (!token) {
         throw new UnauthorizedException('No token!');
       }
-      console.log('TESTTTTT', this.jwtService.decode(token));
       request.user = this.jwtService.verify(token);
     } catch (err) {
       throw new UnauthorizedException('Invalid token!');
