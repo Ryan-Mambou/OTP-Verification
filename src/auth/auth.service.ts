@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -13,14 +14,15 @@ import {
   generateOtp,
 } from 'src/common/utils/otp.generator';
 import { MailingService } from 'src/mailing/mailing.service';
+import { User } from 'src/database/core/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    private otpService: OtpService,
-    private mailingService: MailingService,
-    private jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly otpService: OtpService,
+    private readonly mailingService: MailingService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
@@ -48,7 +50,6 @@ export class AuthService {
 
       await this.mailingService.sendMail(email, 'Verify your email', newOtp);
 
-      console.log('newUSer --->', newUser);
       return newUser;
     } else {
       throw new ConflictException('User with this email already exists');
@@ -70,12 +71,20 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect password');
     }
 
-    console.log(
-      'user --->',
-      this.jwtService.sign({ email: user.email, userId: user.id }),
-    );
     return {
       accessToken: this.jwtService.sign({ email: user.email, userId: user.id }),
     };
+  }
+
+  async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('This user does not exist');
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      throw new BadRequestException('Incorrect password');
+    }
+    return user;
   }
 }

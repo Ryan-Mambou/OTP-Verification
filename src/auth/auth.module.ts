@@ -6,6 +6,8 @@ import { UserModule } from 'src/user/user.module';
 import { MailingModule } from 'src/mailing/mailing.module';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './auth.local.strategy';
 config();
 
 @Module({
@@ -17,8 +19,9 @@ config();
     UserModule,
     OtpModule,
     MailingModule,
+    PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
 })
 export class AuthModule {}
